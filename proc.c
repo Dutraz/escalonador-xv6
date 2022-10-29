@@ -6,6 +6,9 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include <stdlib.h>
+#include <time.h>
+
 
 struct {
   struct spinlock lock;
@@ -311,6 +314,22 @@ wait(void)
   }
 }
 
+// Soma o total de tickets envolvidos no sistema para
+// ser usado como parâmetro no sorteio.
+int 
+soma_tickets (void) {
+  struct proc *p;
+  int total = 0;
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if (p->state == RUNNABLE) {
+      total += p->tickets;
+    }
+  }
+  
+  return total;
+}
+
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
@@ -326,15 +345,37 @@ scheduler(void)
   struct cpu *c = mycpu();
   c->proc = 0;
   
+  // Variáveis da loteria
+  int counter;            // Utilizada para controlar se já há um vencedor
+  int ticket_premiado;    // Deve ser alimentada com valores aleatórios
+  int total_tickets;      // Total de tickets do sistema
+  srand(time(NULL));      // Seed para o rand
+
   for(;;){
     // Enable interrupts on this processor.
     sti();
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
+
+    // Inicializando as variáveis da loteria
+    counter = 0;
+    total_tickets = soma_tickets();  // Somatório dos tickets
+    ticket_premiado = rand() % total_tickets;   // Sorteia o ticket
+
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
+    
+      if(p->state != RUNNABLE) {
         continue;
+      }
+
+      // Soma os tickets do contador com os do processo do loop
+      counter += p->tickets;
+
+      // Se o contador ainda não chegou no ticket premiado
+      if(counter < ticket_premiado) {
+        continue;
+      }
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it

@@ -1,3 +1,49 @@
+### Univeridade Federal da Fronteira Sul - Campus Chapecó
+### Ciência da Computação - Sistemas Operacionais – 2022.2
+### Prof. Marco Aurélio Spohn
+### Acadêmico: **Pedro Zawadzki Dutra**
+<br>
+<br>
+
+# **Desenvolvendo um Escalonador em XV6**
+
+### **Objetivo geral:** 
+- Desenvolver conhecimento e prática de implementação de um componente básico (i.e.,
+escalonador de processos) em um sistema operacional didático.
+
+### **Objetivos específicos:**
+- Estudar o código de uma implementação do Unix versão 6 para a plataforma Intel (xv6, desenvolvido no MIT); 
+- Analisar e planejar a implementação de dois escalonadores de processos; 
+- Implementar os escalonadores; 
+- Avaliar os escalonadores através de experimentos
+
+### **Plataforma:**
+- xv6 → http://pdos.csail.mit.edu/6.828/2012/xv6.html
+
+### **Descrição do Trabalho I:**
+- Implementar o escalonador de processos baseado em loteria (lottery
+scheduling). Na instanciação de um processo, deve-se passar ao sistema a quantidade de bilhetes
+que o novo processo recebe. Caso o usuário não forneça esse dado, o sistema assume um número
+default de bilhetes. Assumir também um número máximo de bilhetes que um processo pode receber.
+<br>
+<br>
+
+## **Instalando o projeto na WSL:**
+> `sudo apt-get update` <br>
+> `sudo apt-get install qemu` <br>
+> `sudo apt-get install make` <br>
+> `sudo apt-get install libc6-i386 libc6-dev-i386` <br>
+> `sudo apt install qemu-system-x86` <br>
+> `git clone https://github.com/Dutraz/escalonador-xv6 xv6` <br>
+> `chmod 700 -R xv6` <br>
+> `cd xv6` <br>
+> `make` <br>
+> `make qemu-nox` <br>
+
+
+
+---
+
 NOTE: we have stopped maintaining the x86 version of xv6, and switched
 our efforts to the RISC-V version
 (https://github.com/mit-pdos/xv6-riscv.git)

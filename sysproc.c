@@ -10,7 +10,14 @@
 int
 sys_fork(void)
 {
-  return fork();
+  int tickets;
+
+  // A função argint retorna os argumentos da chamada da função
+  if(argint(0, &tickets) < 0) {
+    return -1;
+  }
+
+  return fork(tickets);
 }
 
 int

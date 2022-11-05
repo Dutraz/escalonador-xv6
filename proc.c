@@ -181,7 +181,7 @@ growproc(int n)
 // Sets up stack to return as if from system call.
 // Caller must set state of returned proc to RUNNABLE.
 int
-fork(void)
+fork(int tickets)
 {
   int i, pid;
   struct proc *np;
@@ -199,6 +199,17 @@ fork(void)
     np->state = UNUSED;
     return -1;
   }
+
+  // Validar tickets baseado nos parâmetros do S.O.
+  // Não pode ter menos de um ticket pois nunca será executado
+  if (tickets < 1) {
+    np->tickets = DEFTICKETS;
+  } else if (tickets > MAXTICKETS) {
+    np->tickets = MAXTICKETS;
+  } else {
+    np->tickets = tickets;
+  }
+
   np->sz = curproc->sz;
   np->parent = curproc;
   *np->tf = *curproc->tf;

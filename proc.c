@@ -6,9 +6,6 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
-#include <stdlib.h>
-#include <time.h>
-
 
 struct {
   struct spinlock lock;
@@ -341,6 +338,17 @@ soma_tickets (void) {
   return total;
 }
 
+/**
+ * essa função já existe no código, gera valores aleatórios a cada nova seed gerada via overflow
+*/
+unsigned long randstate = 1;
+unsigned int
+rand()
+{
+  randstate = randstate * 1664525 + 1013904223;
+  return randstate;
+}
+
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
@@ -360,7 +368,6 @@ scheduler(void)
   int counter;            // Utilizada para controlar se já há um vencedor
   int ticket_premiado;    // Deve ser alimentada com valores aleatórios
   int total_tickets;      // Total de tickets do sistema
-  srand(time(NULL));      // Seed para o rand
 
   for(;;){
     // Enable interrupts on this processor.

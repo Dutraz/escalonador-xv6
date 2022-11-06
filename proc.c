@@ -199,7 +199,6 @@ fork(int tickets)
 
   // Validar tickets baseado nos parâmetros do S.O.
   // Não pode ter menos de um ticket pois nunca será executado
-  cprintf("FORK\n");
   if (tickets < 1) {
     np->tickets = DEFTICKETS;
   } else if (tickets > MAXTICKETS) {
@@ -370,8 +369,6 @@ scheduler(void)
   int ticket_premiado;    // Deve ser alimentada com valores aleatórios
   int total_tickets;      // Total de tickets do sistema
 
-  cprintf("\nSCHEDULER\n");
-
   for(;;){
     // Enable interrupts on this processor.
     sti();
@@ -381,7 +378,9 @@ scheduler(void)
 
     // Inicializando as variáveis da loteria
     counter = 0;
-    // TODO: ajustar aqui
+    // TODO: ajustar para não ser necessário a soma 
+    // (é necessário pois acaba tentando pegar o resto da divisão por 0)
+    // porém essa medida acaba privilegiando o último processo com um ticket
     total_tickets = soma_tickets() + 1;  // Somatório dos tickets
     ticket_premiado = rand() % total_tickets;   // Sorteia o ticket
 
@@ -398,8 +397,6 @@ scheduler(void)
       if(counter < ticket_premiado) {
         continue;
       }
-
-      cprintf("Rodando: %d\n", p->pid);
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -582,18 +579,25 @@ procdump(void)
   uint pc[10];
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-    if(p->state == UNUSED)
+    if(p->state == UNUSED) {
       continue;
-    if(p->state >= 0 && p->state < NELEM(states) && states[p->state])
+    }
+
+    if(p->state >= 0 && p->state < NELEM(states) && states[p->state]) {
       state = states[p->state];
-    else
+    } else {
       state = "???";
-    cprintf("%d %s %s", p->pid, state, p->name);
+    }
+
+    cprintf("%d\t| %d\t| %s\t| %s\t", p->pid, p->tickets, state, p->name);
+    
     if(p->state == SLEEPING){
       getcallerpcs((uint*)p->context->ebp+2, pc);
-      for(i=0; i<10 && pc[i] != 0; i++)
+      for(i=0; i<10 && pc[i] != 0; i++) {
         cprintf(" %p", pc[i]);
+      }
     }
+    
     cprintf("\n");
   }
 }

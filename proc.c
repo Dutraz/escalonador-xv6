@@ -199,6 +199,7 @@ fork(int tickets)
 
   // Validar tickets baseado nos parâmetros do S.O.
   // Não pode ter menos de um ticket pois nunca será executado
+  cprintf("FORK\n");
   if (tickets < 1) {
     np->tickets = DEFTICKETS;
   } else if (tickets > MAXTICKETS) {
@@ -369,6 +370,8 @@ scheduler(void)
   int ticket_premiado;    // Deve ser alimentada com valores aleatórios
   int total_tickets;      // Total de tickets do sistema
 
+  cprintf("\nSCHEDULER\n");
+
   for(;;){
     // Enable interrupts on this processor.
     sti();
@@ -378,7 +381,8 @@ scheduler(void)
 
     // Inicializando as variáveis da loteria
     counter = 0;
-    total_tickets = soma_tickets();  // Somatório dos tickets
+    // TODO: ajustar aqui
+    total_tickets = soma_tickets() + 1;  // Somatório dos tickets
     ticket_premiado = rand() % total_tickets;   // Sorteia o ticket
 
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
@@ -394,6 +398,8 @@ scheduler(void)
       if(counter < ticket_premiado) {
         continue;
       }
+
+      cprintf("Rodando: %d\n", p->pid);
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it

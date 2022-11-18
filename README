@@ -40,7 +40,10 @@ default de bilhetes. Assumir também um número máximo de bilhetes que um proce
 > `make` <br>
 > `make qemu-nox` <br>
 
-
+## **Testando o projeto no qemu **
+-Após a instalação, compile novamente com make, depois make-qemu-nox.
+Em seguida digite 'test' no qemu para rodar o teste com bilhetes
+Caso deseje listar somente processos vivos digite 'ps'
 
 ---
 

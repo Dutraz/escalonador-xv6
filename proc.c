@@ -339,7 +339,7 @@ soma_tickets (void) {
 }
 
 /**
- * essa função já existe no código, gera valores aleatórios a cada nova seed gerada via overflow
+ * Essa função já existe no código, gera valores aleatórios a cada nova seed gerada via overflow
 */
 unsigned long randstate = 1;
 unsigned int
@@ -600,4 +600,50 @@ procdump(void)
     
     cprintf("\n");
   }
+}
+
+/**
+ * @returns a número da SYScall, esta função serve para listar os processos ainda vivos
+*/
+int
+ps(){
+  struct proc *p;
+
+  sti();
+
+  acquire(&ptable.lock);
+  cprintf("nome \t id \t estado \t\n");
+  for(p = ptable.proc; p<&ptable.proc[NPROC]; p++){
+    if(p->state == SLEEPING)
+      cprintf("%s \t %d \t SLEEPING \t \n", p->name, p->pid);
+    else if (p->state == RUNNING)
+      cprintf("%s \t %d \t RUNNING \t \n", p->name, p->pid);
+    else if (p->state == RUNNABLE)
+      cprintf("%s \t %d \t RUNNABLE \t \n", p->name, p->pid);
+  }
+
+  release(&ptable.lock);
+
+  return 22;
+}
+
+/**
+ * Função de teste, efetivamente lista todos os processos com seus respectivos tickets
+*/
+int
+test(){
+  struct proc *p;
+
+  sti();
+
+  acquire(&ptable.lock);
+  cprintf("nome \t id \t tickets\t\n");
+  for(p = ptable.proc; p<&ptable.proc[NPROC]; p++){
+      cprintf("%s \t %d \t  %d\t\n", p->name, p->pid, p->tickets);
+  }
+
+  release(&ptable.lock);
+
+  return 23;
+
 }

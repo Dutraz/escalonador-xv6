@@ -603,10 +603,34 @@ procdump(void)
 }
 
 /**
+ * Função auxiliar para gastar processamento
+*/
+int bubble_sort (int vetor[], int n) {
+    int k, j, aux;
+
+    for (k = 1; k < n; k++) {
+        //printf("\n[%d] ", k);
+
+        for (j = 0; j < n - 1; j++) {
+            //printf("%d, ", j);
+
+            if (vetor[j] > vetor[j + 1]) {
+                aux          = vetor[j];
+                vetor[j]     = vetor[j + 1];
+                vetor[j + 1] = aux;
+            }
+        }
+    }
+
+    return 0;
+}
+
+/**
  * @returns a número da SYScall, esta função serve para listar os processos ainda vivos
 */
 int
 ps(){
+
   struct proc *p;
 
   sti();
@@ -620,6 +644,8 @@ ps(){
       cprintf("%s \t %d \t RUNNING \t \n", p->name, p->pid);
     else if (p->state == RUNNABLE)
       cprintf("%s \t %d \t RUNNABLE \t \n", p->name, p->pid);
+    else if (p->state == ZOMBIE)
+      cprintf("%s \t %d \t ZOMBIE \t \n", p->name, p->pid);
   }
 
   release(&ptable.lock);
@@ -633,17 +659,44 @@ ps(){
 int
 test(){
   struct proc *p;
-
+  int vet[10] = {23,76,90,56,89,10,12,14,4,1};
+ 
   sti();
 
-  acquire(&ptable.lock);
-  cprintf("nome \t id \t tickets\t\n");
-  for(p = ptable.proc; p<&ptable.proc[NPROC]; p++){
-      cprintf("%s \t %d \t  %d\t\n", p->name, p->pid, p->tickets);
+
+/**
+ * A ideia desse for é instanciar 5 novos processos e a partir deles 
+ * rodar um bubblesort para gastar processamento, fiz um bubble com 10 valores
+ * mas podem ser mais.
+ * Depois de iniciar um novo fork ele lista todos os processos ligados ao inicial
+ * e no fim da tabela e mostra o númerode tickets passados.
+*/
+  //cprintf("nome \t id \t tickets\t\n");
+  for (int i = 0; i<5; i++){
+    int r = rand() % 100;
+
+    fork(r);
+
+    bubble_sort(vet, 10);
+    acquire(&ptable.lock);
+    for(p = ptable.proc; p<&ptable.proc[NPROC]; p++){
+      if(p->state == SLEEPING)
+        cprintf("%s \t %d \t SLEEPING \t \n", p->name, p->pid);
+      else if (p->state == RUNNING)
+        cprintf("%s \t %d \t RUNNING \t \n", p->name, p->pid);
+      else if (p->state == RUNNABLE)
+        cprintf("%s \t %d \t RUNNABLE \t \n", p->name, p->pid);
+      else if (p->state == ZOMBIE)
+        cprintf("%s \t %d \t ZOMBIE \t \n", p->name, p->pid);
+    }
+    release(&ptable.lock);
+
+    cprintf("%d \n", r);
+
   }
 
-  release(&ptable.lock);
 
   return 23;
 
 }
+

@@ -341,6 +341,10 @@ soma_tickets (void) {
       total += p->tickets;
     }
   }
+
+  if (total == 0) {
+    return 1;
+  }
   
   return total;
 }
@@ -385,10 +389,7 @@ scheduler(void)
 
     // Inicializando as variáveis da loteria
     counter = 0;
-    // TODO: ajustar para não ser necessário a soma 
-    // (é necessário pois acaba tentando pegar o resto da divisão por 0)
-    // porém essa medida acaba privilegiando o último processo com um ticket
-    total_tickets = soma_tickets() + 1;  // Somatório dos tickets
+    total_tickets = soma_tickets();  // Somatório dos tickets
     ticket_premiado = rand() % total_tickets;   // Sorteia o ticket
 
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){

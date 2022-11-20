@@ -97,11 +97,14 @@ sys_uptime(void)
   return xticks;
 }
 
-int
-sys_ps(void){
+int 
+sys_ps(void)
+{
   return ps();
 }
 
-int sys_test(void){
-  return test();
+int 
+sys_lotterytest(void)
+{
+  return 1;
 }

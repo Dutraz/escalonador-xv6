@@ -150,6 +150,10 @@ userinit(void)
 
   p->state = RUNNABLE;
 
+  // Inicializa o processo com a quantidade default de tickets
+  p->tickets = DEFTICKETS;
+  p->runned = 0;
+
   release(&ptable.lock);
 }
 
@@ -206,6 +210,9 @@ fork(int tickets)
   } else {
     np->tickets = tickets;
   }
+
+  // Inicializa o contador de execução
+  np->runned = 0;
 
   np->sz = curproc->sz;
   np->parent = curproc;
@@ -405,6 +412,9 @@ scheduler(void)
       switchuvm(p);
       p->state = RUNNING;
 
+      // Incrementa o contador de execução
+      p->runned++;
+
       swtch(&(c->scheduler), p->context);
       switchkvm();
 
@@ -573,10 +583,8 @@ procdump(void)
   [RUNNING]   "run   ",
   [ZOMBIE]    "zombie"
   };
-  int i;
   struct proc *p;
   char *state;
-  uint pc[10];
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->state == UNUSED) {
@@ -589,114 +597,19 @@ procdump(void)
       state = "???";
     }
 
-    cprintf("%d\t| %d\t| %s\t| %s\t", p->pid, p->tickets, state, p->name);
-    
-    if(p->state == SLEEPING){
-      getcallerpcs((uint*)p->context->ebp+2, pc);
-      for(i=0; i<10 && pc[i] != 0; i++) {
-        cprintf(" %p", pc[i]);
-      }
-    }
-    
+    cprintf("%d\t| %s\t| %d\t| %d\t| %s", p->pid, state, p->tickets, p->runned, p->name);    
     cprintf("\n");
   }
 }
 
 /**
- * Função auxiliar para gastar processamento
-*/
-int bubble_sort (int vetor[], int n) {
-    int k, j, aux;
-
-    for (k = 1; k < n; k++) {
-        //printf("\n[%d] ", k);
-
-        for (j = 0; j < n - 1; j++) {
-            //printf("%d, ", j);
-
-            if (vetor[j] > vetor[j + 1]) {
-                aux          = vetor[j];
-                vetor[j]     = vetor[j + 1];
-                vetor[j + 1] = aux;
-            }
-        }
-    }
-
-    return 0;
+ * Imprime lista de processos com cabeçalho
+ */
+int 
+ps(void)
+{
+  cprintf("\033c");
+  cprintf("PID\t| STATE\t\t| TKTS\t| RUN\t| NAME\n");
+  procdump();
+  return 0;
 }
-
-/**
- * @returns a número da SYScall, esta função serve para listar os processos ainda vivos
-*/
-int
-ps(){
-
-  struct proc *p;
-
-  sti();
-
-  acquire(&ptable.lock);
-  cprintf("nome \t id \t estado \t\n");
-  for(p = ptable.proc; p<&ptable.proc[NPROC]; p++){
-    if(p->state == SLEEPING)
-      cprintf("%s \t %d \t SLEEPING \t \n", p->name, p->pid);
-    else if (p->state == RUNNING)
-      cprintf("%s \t %d \t RUNNING \t \n", p->name, p->pid);
-    else if (p->state == RUNNABLE)
-      cprintf("%s \t %d \t RUNNABLE \t \n", p->name, p->pid);
-    else if (p->state == ZOMBIE)
-      cprintf("%s \t %d \t ZOMBIE \t \n", p->name, p->pid);
-  }
-
-  release(&ptable.lock);
-
-  return 22;
-}
-
-/**
- * Função de teste, efetivamente lista todos os processos com seus respectivos tickets
-*/
-int
-test(){
-  struct proc *p;
-  int vet[10] = {23,76,90,56,89,10,12,14,4,1};
- 
-  sti();
-
-
-/**
- * A ideia desse for é instanciar 5 novos processos e a partir deles 
- * rodar um bubblesort para gastar processamento, fiz um bubble com 10 valores
- * mas podem ser mais.
- * Depois de iniciar um novo fork ele lista todos os processos ligados ao inicial
- * e no fim da tabela e mostra o númerode tickets passados.
-*/
-  //cprintf("nome \t id \t tickets\t\n");
-  for (int i = 0; i<5; i++){
-    int r = rand() % 100;
-
-    fork(r);
-
-    bubble_sort(vet, 10);
-    acquire(&ptable.lock);
-    for(p = ptable.proc; p<&ptable.proc[NPROC]; p++){
-      if(p->state == SLEEPING)
-        cprintf("%s \t %d \t SLEEPING \t \n", p->name, p->pid);
-      else if (p->state == RUNNING)
-        cprintf("%s \t %d \t RUNNING \t \n", p->name, p->pid);
-      else if (p->state == RUNNABLE)
-        cprintf("%s \t %d \t RUNNABLE \t \n", p->name, p->pid);
-      else if (p->state == ZOMBIE)
-        cprintf("%s \t %d \t ZOMBIE \t \n", p->name, p->pid);
-    }
-    release(&ptable.lock);
-
-    cprintf("%d \n", r);
-
-  }
-
-
-  return 23;
-
-}
-

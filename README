@@ -1,9 +1,7 @@
 ### Universidade Federal da Fronteira Sul - Campus Chapecó
 ### Ciência da Computação - Sistemas Operacionais – 2022.2
 ### Prof. Marco Aurélio Spohn
-### Acadêmicos:  **Carlos Eduardo Thomas**, **Daniel Salvini**, **Pedro Zawadzki Dutra**
-<br>
-<br>
+### Acadêmicos: **Carlos Eduardo Thomas**, **Daniel Salvini**, **Pedro Zawadzki Dutra**
 
 # **Desenvolvendo um Escalonador em XV6**
 
@@ -26,7 +24,6 @@ scheduling). Na instanciação de um processo, deve-se passar ao sistema a quant
 que o novo processo recebe. Caso o usuário não forneça esse dado, o sistema assume um número
 default de bilhetes. Assumir também um número máximo de bilhetes que um processo pode receber.
 
-<br>
 
 
 
@@ -42,7 +39,9 @@ default de bilhetes. Assumir também um número máximo de bilhetes que um proce
 > `make` <br>
 > `make qemu-nox` <br>
 
-<br/>
+
+
+
 
 ---
 
@@ -60,9 +59,8 @@ Insira o comando 'lotterytest' para rodar o arquivo de testes que:
 
 Por meio deste comando de teste é possível acompanhar em tempo real o contador de execução. Após alguns segundos do teste rodando é nítida a distinção do contador de execuções dos processos com mais tickets do que dos outros processos.
 
-<br/>
-<br/>
-<br/>
+
+
 
 ---
 

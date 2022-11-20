@@ -1,4 +1,4 @@
-### Univeridade Federal da Fronteira Sul - Campus Chapecó
+### Universidade Federal da Fronteira Sul - Campus Chapecó
 ### Ciência da Computação - Sistemas Operacionais – 2022.2
 ### Prof. Marco Aurélio Spohn
 ### Acadêmicos:  **Carlos Eduardo Thomas**, **Daniel Salvini**, **Pedro Zawadzki Dutra**
@@ -25,8 +25,10 @@ escalonador de processos) em um sistema operacional didático.
 scheduling). Na instanciação de um processo, deve-se passar ao sistema a quantidade de bilhetes
 que o novo processo recebe. Caso o usuário não forneça esse dado, o sistema assume um número
 default de bilhetes. Assumir também um número máximo de bilhetes que um processo pode receber.
+
 <br>
-<br>
+
+
 
 ## **Instalando o projeto na WSL:**
 > `sudo apt-get update` <br>
@@ -40,10 +42,27 @@ default de bilhetes. Assumir também um número máximo de bilhetes que um proce
 > `make` <br>
 > `make qemu-nox` <br>
 
-## **Testando o projeto no qemu **
--Após a instalação, compile novamente com make, depois make-qemu-nox.
-Em seguida digite 'test' no qemu para rodar o teste com bilhetes
-Caso deseje listar somente processos vivos digite 'ps'
+<br/>
+
+---
+
+## **Testando o projeto**
+
+Insira o comando 'lotterytest' para rodar o arquivo de testes que:
+
+- Instancia 10 processos, designando a eles tickets de forma quadrática. Cada processo implementa um loop infinito, apenas para consumir CPU;
+- Também inicia um processo que imprime constantemente a tabela de processos, indicando respectivamente:
+    - O ID do processo;
+    - O estado do processo;
+    - A quantidade de tickets do processo;
+    - A quantidade de vezes que o processo foi colocado na CPU pelo escalonador;
+    - O nome identificador do processo.
+
+Por meio deste comando de teste é possível acompanhar em tempo real o contador de execução. Após alguns segundos do teste rodando é nítida a distinção do contador de execuções dos processos com mais tickets do que dos outros processos.
+
+<br/>
+<br/>
+<br/>
 
 ---
 

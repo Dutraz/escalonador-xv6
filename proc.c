@@ -336,8 +336,8 @@ soma_tickets (void) {
   struct proc *p;
   int total = 0;
 
-  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-    if (p->state == RUNNABLE) {
+  for(p = ptable.proc; p <= &ptable.proc[NPROC]; p++) {
+    if (p->state == RUNNABLE || p->state == RUNNING) {
       total += p->tickets;
     }
   }
@@ -394,7 +394,7 @@ scheduler(void)
 
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     
-      if(p->state != RUNNABLE) {
+      if(p->state != RUNNABLE && p->state != RUNNING) {
         continue;
       }
 
@@ -612,5 +612,7 @@ ps(void)
   cprintf("\033c");
   cprintf("PID\t| STATE\t\t| TKTS\t| RUN\t| NAME\n");
   procdump();
+  cprintf("-----------------------------------------------------\n");
+  cprintf("\t| \t \t| %d\t| \t|\n", soma_tickets());
   return 0;
 }

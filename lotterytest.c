@@ -27,7 +27,7 @@ void listProccess(void)
 {
     while (1)
     {
-        sleep(50);
+        sleep(25);
         ps();
     }
 }
@@ -37,8 +37,8 @@ void listProccess(void)
  */
 void runtest()
 {
-    int tickets = 1;
-    for (int i = 1; i <= PROCESS_QUANTITY; i++)
+    int tickets = 2;
+    for (int i = 1; i <= (PROCESS_QUANTITY -1); i++)
     {
         spendCPU(tickets);
         tickets = tickets * 2;

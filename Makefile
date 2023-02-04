@@ -180,7 +180,6 @@ UPROGS=\
 	_stressfs\
 	_wc\
 	_ps\
-	_test\
 	_zombie\
 	_lotterytest\
 

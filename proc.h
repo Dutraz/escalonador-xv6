@@ -50,6 +50,8 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
   int tickets;                 // Quantidade de tickets do processo
+  int stride;                  // Passada do processo
+  int stridecount;             // Contador de passadas do processo
   int runned;                  // Quantidade de vezes em que foi executado pelo escalonador
 };
 

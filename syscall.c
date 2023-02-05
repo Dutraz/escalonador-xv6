@@ -104,7 +104,7 @@ extern int sys_wait(void);
 extern int sys_write(void);
 extern int sys_uptime(void);
 extern int sys_ps(void);
-extern int sys_lotterytest(void);
+extern int sys_stridetest(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -129,7 +129,7 @@ static int (*syscalls[])(void) = {
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
 [SYS_ps]      sys_ps,
-[SYS_lotterytest]    sys_lotterytest,
+[SYS_stridetest]    sys_stridetest,
 };
 
 void

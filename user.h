@@ -24,7 +24,7 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int ps(void);
-int lotterytest(void);
+int stridetest(void);
 
 // ulib.c
 int stat(const char*, struct stat*);

@@ -1,7 +1,7 @@
 ### Universidade Federal da Fronteira Sul - Campus Chapecó
 ### Ciência da Computação - Sistemas Operacionais – 2022.2
 ### Prof. Marco Aurélio Spohn
-### Acadêmicos: **Carlos Eduardo Thomas, Daniel Salvini, Pedro Zawadzki Dutra**
+### Acadêmicos: **Carlos Eduardo Thomas, Pedro Zawadzki Dutra**
 
 # **Desenvolvendo um Escalonador em XV6**
 
@@ -47,7 +47,7 @@ default de bilhetes. Assumir também um número máximo de bilhetes que um proce
 
 ## **Testando o projeto**
 
-Insira o comando 'lotterytest' para rodar o arquivo de testes que:
+Insira o comando 'stridetest' para rodar o arquivo de testes que:
 
 - Instancia 10 processos, designando a eles tickets de forma quadrática. Cada processo implementa um loop infinito, apenas para consumir CPU;
 - Também inicia um processo que imprime constantemente a tabela de processos, indicando respectivamente:

@@ -104,7 +104,7 @@ sys_ps(void)
 }
 
 int 
-sys_lotterytest(void)
+sys_stridetest(void)
 {
   return 1;
 }

@@ -21,4 +21,4 @@
 #define SYS_mkdir  20
 #define SYS_close  21
 #define SYS_ps     22
-#define SYS_lotterytest   23
+#define SYS_stridetest   23

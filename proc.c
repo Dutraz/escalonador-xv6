@@ -152,6 +152,10 @@ userinit(void)
 
   // Inicializa o processo com a quantidade default de tickets
   p->tickets = DEFTICKETS;
+  // Inicializa com o cálculo da passada
+  p->stride = (MAXTICKETS * 2) / DEFTICKETS;
+  // Inicializa as contagem de passadas e execução em 0
+  p->stridecount = 0;
   p->runned = 0;
 
   release(&ptable.lock);
@@ -210,6 +214,11 @@ fork(int tickets)
   } else {
     np->tickets = tickets;
   }
+
+  // Usa como constante de stride o máximo de tickets para que
+  // nunca haja uma passada menor que 1
+  np->stride = (MAXTICKETS * 2) / np->tickets;
+  np->stridecount = 0;
 
   // Inicializa o contador de execução
   np->runned = 0;
@@ -329,35 +338,21 @@ wait(void)
   }
 }
 
-// Soma o total de tickets envolvidos no sistema para
-// ser usado como parâmetro no sorteio.
+// Encontra a menor passada do sistema para ser
+// usada como parâmetro do scheduler
 int 
-soma_tickets (void) {
+menor_passada (void) 
+{
   struct proc *p;
-  int total = 0;
+  int menor = 1000000000;
 
   for(p = ptable.proc; p <= &ptable.proc[NPROC]; p++) {
-    if (p->state == RUNNABLE || p->state == RUNNING) {
-      total += p->tickets;
+    if ((p->state == RUNNABLE || p->state == RUNNING) && p->stridecount < menor) {
+      menor = p->stridecount;
     }
   }
 
-  if (total == 0) {
-    return 1;
-  }
-  
-  return total;
-}
-
-/**
- * Essa função já existe no código, gera valores aleatórios a cada nova seed gerada via overflow
-*/
-unsigned long randstate = 1;
-unsigned int
-rand()
-{
-  randstate = randstate * 1664525 + 1013904223;
-  return randstate;
+  return menor;
 }
 
 //PAGEBREAK: 42
@@ -376,35 +371,31 @@ scheduler(void)
   c->proc = 0;
   
   // Variáveis da loteria
-  int counter;            // Utilizada para controlar se já há um vencedor
-  int ticket_premiado;    // Deve ser alimentada com valores aleatórios
-  int total_tickets;      // Total de tickets do sistema
+  int passada_premiada;   // Menor passada do sistema
 
   for(;;){
+
     // Enable interrupts on this processor.
     sti();
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
 
-    // Inicializando as variáveis da loteria
-    counter = 0;
-    total_tickets = soma_tickets();  // Somatório dos tickets
-    ticket_premiado = rand() % total_tickets;   // Sorteia o ticket
+    // Inicializando as variáveis do strider
+    passada_premiada = menor_passada(); // Menor passada do sistema
 
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     
-      if(p->state != RUNNABLE && p->state != RUNNING) {
+      if(p->state != RUNNABLE) {
         continue;
       }
 
-      // Soma os tickets do contador com os do processo do loop
-      counter += p->tickets;
-
-      // Se o contador ainda não chegou no ticket premiado
-      if(counter < ticket_premiado) {
+      if(passada_premiada != 0 && p->stridecount != passada_premiada) {
         continue;
       }
+
+      // Atualiza o contador de passadas do processo
+      p->stridecount += p->stride;
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -598,7 +589,7 @@ procdump(void)
       state = "???";
     }
 
-    cprintf("%d\t| %s\t| %d\t| %d\t| %s", p->pid, state, p->tickets, p->runned, p->name);    
+    cprintf("%d\t| %s\t| %d\t| %d\t| %d\t\t| %d\t| %s", p->pid, state, p->tickets, p->stride, p->stridecount, p->runned, p->name);    
     cprintf("\n");
   }
 }
@@ -610,9 +601,7 @@ int
 ps(void)
 {
   cprintf("\033c");
-  cprintf("PID\t| STATE\t\t| TKTS\t| RUN\t| NAME\n");
+  cprintf("PID\t| STATE\t\t| TKTS\t| STRD\t| CNT\t\t| RUN\t| NAME\n");
   procdump();
-  cprintf("-----------------------------------------------------\n");
-  cprintf("\t| \t \t| %d\t| \t|\n", soma_tickets());
   return 0;
 }

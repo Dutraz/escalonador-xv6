@@ -24,7 +24,23 @@ scheduling). Na instanciação de um processo, deve-se passar ao sistema a quant
 que o novo processo recebe. Caso o usuário não forneça esse dado, o sistema assume um número
 default de bilhetes. Assumir também um número máximo de bilhetes que um processo pode receber.
 
-
+### **Descrição do Trabalho II:**
+- Implementar o escalonador de processos stride scheduling (escalonamento em
+passos largos). Semelhante ao escalonamento por loteria, cada processo recebe um número fixo de bilhetes
+(tickets). Ao invés de utilizar um sorteio (abordagem probabilística), calcula-se o “passo” (stride) de cada
+processo como sendo o resultado da divisão de um valor constante (e.g., 10.000) pelo número de bilhetes do
+processo. Cada processo inicia com uma “passada inicial” igual a zero (0). O escalonador seleciona o
+processo com o menor valor de passada atual; portanto, inicialmente qualquer um dos processos prontos
+pode ser selecionado. Nesse caso, utiliza-se um critério qualquer para desempate (e.g., o processo com o
+maior PID é selecionado). Após selecionado, a passada do processo é incrementada com o valor do “passo”
+do processo. Por exemplo, assuma que há 3 processos, A, B e C, cada um com 100, 50 e 250 bilhetes,
+respectivamente; portanto, A tem passo 100, B tem passo 200 e C tem passo 40. Caso o processo A seja
+selecionado inicialmente, a sua passada é atualizada para 100. Em seguida B e C ainda tem passada zero.
+Vamos assumir que B seja escalonado, atualizando sua passada para 200. Em seguida, o processo
+necessariamente selecionado é o C (passada ainda é zero), fazendo sua passada ser atualizada para 40. Em
+sequência, o processo C é selecionado mais duas vezes seguidas até atingir uma passada maior que o
+processo A (passada = 100). Essa abordagem torna o escalonamento determinístico, concedendo
+rapidamente uma fração da CPU correspondente ao número de bilhetes de cada processo.
 
 
 ## **Instalando o projeto na WSL:**
@@ -47,19 +63,37 @@ default de bilhetes. Assumir também um número máximo de bilhetes que um proce
 
 ## **Testando o projeto**
 
-Insira o comando 'lotterytest' para rodar o arquivo de testes que:
+- Para compilar ambos os projetos basta rodar o comando:
 
-- Instancia 10 processos, designando a eles tickets de forma quadrática. Cada processo implementa um loop infinito, apenas para consumir CPU;
-- Também inicia um processo que imprime constantemente a tabela de processos, indicando respectivamente:
-    - O ID do processo;
-    - O estado do processo;
-    - A quantidade de tickets do processo;
-    - A quantidade de vezes que o processo foi colocado na CPU pelo escalonador;
-    - O nome identificador do processo.
+> make clean; make; make qemu-nox
 
-Por meio deste comando de teste é possível acompanhar em tempo real o contador de execução. Após alguns segundos do teste rodando é nítida a distinção do contador de execuções dos processos com mais tickets do que dos outros processos.
+- Após isso, no lottery-scheduller (T1), basta rodar:
 
+> lotterytest
 
+e no stride-scheduller (T2), rode:
+
+> stridetest
+
+Em ambos os projetos, o comando irá inicializar diversos processos com 
+tickets de forma quadrática que irão rodar de forma intermitente, apenas 
+consumindo processamento, com o propósito de visualizar quantas vezes
+serão colocados em processamento pelo escalonador.
+
+Estes dados podem ser analisados em tempo real por meio de um dos 
+processos do programa de testes que imprime uma tabela com dados básicos
+dos processos ativos do sistema. A tabela contém o nome do processo,
+a quantidade de tickets (coluna TKTS) que ele possui e a quantidade de 
+vezes que foi colocado em execução pelo escalonador (RUN).
+
+Durante os testes sempre será possível observar uma anomalia na quantidade 
+de execuções do último processo instanciado, que também é o com mais tickets, 
+comparada com os demais processos. Essa anomalia se dá pelo fato de que o último
+processo do programa de testes sempre será o responsável por imprimir a tabela
+contendo as informações dos processos para o usuário. Para que a visualização
+da mesma fique mais agradável ao usuário foi necessário implementar uma frequência
+de atualizações do terminal, o que acaba por colocar o processo em espera (sleep)
+por alguns milissegundos e impedindo-o de ser escolhido pelo escalonador.
 
 
 ---
